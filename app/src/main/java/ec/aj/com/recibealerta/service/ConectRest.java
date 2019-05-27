@@ -2,6 +2,7 @@ package ec.aj.com.recibealerta.service;
 
 import android.app.ProgressDialog;
 import android.content.Context;
+import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 
 import com.android.volley.Request;
@@ -18,34 +19,31 @@ import org.json.JSONObject;
 
 import java.io.IOException;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
+
+import ec.aj.com.recibealerta.adapter.ContactAdapter;
+import ec.aj.com.recibealerta.clases.ContactInfo;
 
 public class ConectRest {
 
     Context context;
     String url;
     MensajePopUp mensaje;
+    RecyclerView recList;
 
-    public ConectRest(Context context, String url){
+    public ConectRest(Context context, String url, RecyclerView recList) {
         this.context = context;
         this.url = url;
         this.mensaje = new MensajePopUp(context);
+        this.recList = recList;
     }
+
     public void comsumirRestAlertas(final ProgressDialog progressDialog, String strUsuario) throws IOException {
 
-        /*Map<String, String> params = new HashMap();
-        params.put("usuario", strUsuario); // 30 car
-        params.put("localizacion", strLatLon); // 100 caracteres
-        params.put("descripcion", "Ayuda"); //40 caracteres
-        params.put("estado", "Activo"); // 10
-        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-        String currentDateandTime = sdf.format(new Date());
-        params.put("fechaCreacion", currentDateandTime);
-        params.put("fechaCierre", "");
-
-        JSONObject parameters = new JSONObject(params);*/
 
         RequestQueue requestQueue = Volley.newRequestQueue(context);
 
@@ -64,9 +62,8 @@ public class ConectRest {
                             e.printStackTrace();
                         }
                         progressDialog.dismiss();
-                        if(!strRespuesta.equals("-1"))
-                            mensaje.mensajeTitulo("En un momento la atenderán",
-                                    "Alerta enviada");
+                        if (!strRespuesta.equals("-1"))
+                            llenarInfo(response);
                         else
                             mensaje.mensajeSimple("No se encuentran novedades asignadas");
 
@@ -84,6 +81,25 @@ public class ConectRest {
         );
 
         requestQueue.add(objectRequest);
+    }
+
+    public void llenarInfo(JSONArray response) {
+
+        List<ContactInfo> result = new ArrayList<ContactInfo>();
+
+        for (int i = 0; i < response.length(); i++) {
+            try {
+                ContactInfo ci = new ContactInfo();
+                ci.name = response.getJSONObject(i).getString("usuario");;
+                ci.date = response.getJSONObject(i).getString("fechaCreacion");;
+                ci.location = response.getJSONObject(i).getString("localizacion");;
+                result.add(ci);
+            } catch (JSONException e) {
+                mensaje.mensajeSimple("Ha ocurrido un error.");
+            }
+        }
+        ContactAdapter ca = new ContactAdapter(result);
+        recList.setAdapter(ca);
     }
 
     public void comsumirRest(String strLatLon, final ProgressDialog progressDialog, String strUsuario) throws IOException {
@@ -117,7 +133,7 @@ public class ConectRest {
                             e.printStackTrace();
                         }
                         progressDialog.dismiss();
-                        if(strRespuesta.equals("si valio"))
+                        if (strRespuesta.equals("si valio"))
                             mensaje.mensajeTitulo("En un momento la atenderán",
                                     "Alerta enviada");
                         else

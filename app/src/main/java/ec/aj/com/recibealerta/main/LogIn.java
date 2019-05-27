@@ -27,7 +27,6 @@ public class LogIn extends AppCompatActivity {
     EditText con;
     Button ingreso;
     SharedPreferences prefs ;
-    ProgressDialog progressDialog;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -69,8 +68,9 @@ public class LogIn extends AppCompatActivity {
         return (res == PackageManager.PERMISSION_GRANTED);
     }
     public void validar(){
+        String strUsuario = usu.getText().toString().trim().toUpperCase();
 
-        if(/*usu.getText().toString().trim().equals("usuario")&& */
+        if( (strUsuario.equals("POLICIA") || strUsuario.equals("usuario") || strUsuario.equals("usuario")) &&
                 con.getText().toString().trim().equals("1234") ) {
             prefs.edit().putString("usuario", usu.getText().toString().trim()).commit();
             prefs.edit().putBoolean("register", true).commit();
@@ -83,20 +83,11 @@ public class LogIn extends AppCompatActivity {
         }
     }
     public void abrirMenu(){
-        obtenerLista();
-        /*Intent intent;
-        intent = new Intent(this, EnvioAlerta.class);
+        //obtenerLista();
+        Intent intent;
+        intent = new Intent(this, MenuAlerta.class);
         startActivity(intent);
-        finish();*/
+        finish();
     }
-    public void obtenerLista(){
-        String url = "http://www.alerta.amazonebaycomprasecuador.com/api/Agente/Asignado?usuario=POLICIA";
-        progressDialog = ProgressDialog.show(this, "", "Procesando...", false);
-        ConectRest conectRest = new ConectRest(this, url);
-        try {
-            conectRest.comsumirRestAlertas(progressDialog, "POLICIA");
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-    }
+
 }
