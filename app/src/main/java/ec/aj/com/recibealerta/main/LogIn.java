@@ -70,7 +70,7 @@ public class LogIn extends AppCompatActivity {
     public void validar(){
         String strUsuario = usu.getText().toString().trim().toUpperCase();
 
-        if( (strUsuario.equals("POLICIA") || strUsuario.equals("usuario") || strUsuario.equals("usuario")) &&
+        if( (strUsuario.equals("POLICIA") || strUsuario.equals("ADMIN") || strUsuario.equals("USUARIO")) &&
                 con.getText().toString().trim().equals("1234") ) {
             prefs.edit().putString("usuario", usu.getText().toString().trim()).commit();
             prefs.edit().putBoolean("register", true).commit();

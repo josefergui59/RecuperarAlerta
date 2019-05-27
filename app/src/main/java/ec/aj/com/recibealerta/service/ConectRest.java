@@ -2,6 +2,8 @@ package ec.aj.com.recibealerta.service;
 
 import android.app.ProgressDialog;
 import android.content.Context;
+import android.location.Address;
+import android.location.Geocoder;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 
@@ -23,6 +25,7 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 
 import ec.aj.com.recibealerta.adapter.ContactAdapter;
@@ -44,7 +47,6 @@ public class ConectRest {
 
     public void comsumirRestAlertas(final ProgressDialog progressDialog, String strUsuario) throws IOException {
 
-
         RequestQueue requestQueue = Volley.newRequestQueue(context);
 
         JsonArrayRequest objectRequest = new JsonArrayRequest(
@@ -61,11 +63,14 @@ public class ConectRest {
                         } catch (JSONException e) {
                             e.printStackTrace();
                         }
-                        progressDialog.dismiss();
-                        if (!strRespuesta.equals("-1"))
+
+                        if (!strRespuesta.equals("-1")) {
                             llenarInfo(response);
-                        else
+                            progressDialog.dismiss();
+                        } else {
+                            progressDialog.dismiss();
                             mensaje.mensajeSimple("No se encuentran novedades asignadas");
+                        }
 
                         Log.e("Rest Response", response.toString());
                     }
@@ -90,15 +95,44 @@ public class ConectRest {
         for (int i = 0; i < response.length(); i++) {
             try {
                 ContactInfo ci = new ContactInfo();
-                ci.name = response.getJSONObject(i).getString("usuario");;
-                ci.date = response.getJSONObject(i).getString("fechaCreacion");;
-                ci.location = response.getJSONObject(i).getString("localizacion");;
+                ci.name = response.getJSONObject(i).getString("usuario");
+                ;
+                ci.date = response.getJSONObject(i).getString("fechaCreacion");
+                ;
+                ci.location = ci.direccion = response.getJSONObject(i).getString("localizacion");
+                /**/
+                String[] arrLocation = ci.location.split("\\|");
+                Geocoder geocoder = new Geocoder(context, Locale.getDefault());
+
+                try {
+                    //latitud, longitud
+                    List<Address> addresses = geocoder.getFromLocation(Double.parseDouble(arrLocation[0]), Double.parseDouble(arrLocation[1]), 1);
+
+                    if (addresses != null) {
+                        if (addresses.size() > 0) {
+                            Address returnedAddress = addresses.get(0);
+                            /*StringBuilder strReturnedAddress = new StringBuilder();
+                            for (int j = 0; j < returnedAddress.getMaxAddressLineIndex(); j++) {
+                                strReturnedAddress.append(returnedAddress.getAddressLine(i)).append("");
+                            }*/
+                            ci.direccion = returnedAddress.getAddressLine(0);
+                        } else {
+                            String strAdrres = ("No Address!");
+                        }
+                    } else {
+                        String strAdrres = ("No Address returned!");
+                    }
+                } catch (IOException e) {
+                    // TODO Auto-generated catch block
+                    e.printStackTrace();
+                }
+                /**/
                 result.add(ci);
             } catch (JSONException e) {
                 mensaje.mensajeSimple("Ha ocurrido un error.");
             }
         }
-        ContactAdapter ca = new ContactAdapter(result);
+        ContactAdapter ca = new ContactAdapter(result, mensaje, context);
         recList.setAdapter(ca);
     }
 

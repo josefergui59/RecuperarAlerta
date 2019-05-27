@@ -4,6 +4,7 @@ public class ContactInfo {
     public String name;
     public String surname;
     public String location;
+    public String direccion;
     public String date;
 
 

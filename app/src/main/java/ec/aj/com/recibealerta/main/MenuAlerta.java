@@ -103,6 +103,8 @@ public class MenuAlerta extends AppCompatActivity
     public void obtenerLista(){
         String strUsuarrio = prefs.getString("usuario", "Usuario").toUpperCase();
         String url = "http://www.alerta.amazonebaycomprasecuador.com/api/Agente/Asignado?usuario=" + strUsuarrio;
+        if(strUsuarrio.equals("ADMIN"))
+            url = "http://www.alerta.amazonebaycomprasecuador.com/api/Agente";
         progressDialog = ProgressDialog.show(this, "", "Actualizando...", false);
         ConectRest conectRest = new ConectRest(this, url, recList);
         try {
