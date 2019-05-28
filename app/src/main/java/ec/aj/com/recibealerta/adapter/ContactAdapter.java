@@ -39,7 +39,7 @@ public class ContactAdapter extends RecyclerView.Adapter<ContactAdapter.ContactV
     public void onBindViewHolder(ContactViewHolder contactViewHolder, int i) {
         final ContactInfo ci = contactList.get(i);
         contactViewHolder.vName.setText(ci.direccion);
-        contactViewHolder.vFecha.setText(ci.date);
+        contactViewHolder.vFecha.setText(formatoFecha(ci.date));
         contactViewHolder.vTitle.setText(ci.name);
         contactViewHolder.vMap.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -53,6 +53,17 @@ public class ContactAdapter extends RecyclerView.Adapter<ContactAdapter.ContactV
                 abrirMapa(ci);
             }
         });
+    }
+    public  String formatoFecha(String strDate){
+        String strRetorno = strDate;
+        try
+        {
+            strRetorno = strRetorno.replace("T", "  ");
+        }
+        catch(Exception ex){
+
+        }
+        return  strRetorno;
     }
     public void abrirMapa(final ContactInfo ci){
         //mensaje.mensajeSimple(strLocation);

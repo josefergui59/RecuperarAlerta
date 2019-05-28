@@ -69,10 +69,12 @@ public class LogIn extends AppCompatActivity {
     }
     public void validar(){
         String strUsuario = usu.getText().toString().trim().toUpperCase();
+        strUsuario = (strUsuario.equals("POLICÍA")) ? "POLICIA" : strUsuario;
 
-        if( (strUsuario.equals("POLICIA") || strUsuario.equals("ADMIN") || strUsuario.equals("USUARIO")) &&
+        if( (strUsuario.equals("POLICIA") || strUsuario.equals("ADMIN") || strUsuario.equals("USUARIO")
+                || strUsuario.equals("ABOGADO") || strUsuario.equals("TRABAJADOR_SOCIAL")) &&
                 con.getText().toString().trim().equals("1234") ) {
-            prefs.edit().putString("usuario", usu.getText().toString().trim()).commit();
+            prefs.edit().putString("usuario", strUsuario.trim()).commit();
             prefs.edit().putBoolean("register", true).commit();
             abrirMenu();
         }
