@@ -69,6 +69,7 @@ public class ConectRest {
                             progressDialog.dismiss();
                         } else {
                             progressDialog.dismiss();
+                            vaciarLista();
                             mensaje.mensajeSimple("No se encuentran novedades asignadas");
                         }
 
@@ -88,6 +89,11 @@ public class ConectRest {
         requestQueue.add(objectRequest);
     }
 
+    public void vaciarLista(){
+        List<ContactInfo> result = new ArrayList<ContactInfo>();
+        ContactAdapter ca = new ContactAdapter(result, mensaje, context);
+        recList.setAdapter(ca);
+    }
     public void llenarInfo(JSONArray response) {
 
         List<ContactInfo> result = new ArrayList<ContactInfo>();
